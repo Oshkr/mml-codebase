@@ -1,0 +1,24 @@
+# MML-CLIP: Text to X retrieval
+# Usage:
+#   python evaluate_text.py --config eval_configs/text_to_X.yaml
+
+# Evaluation:
+direction: T2G         # possibilities: T2S, T2C or T2G
+text_sampling: no_cues # possibilities: first, random, no_cues
+
+# Model specifics
+backbone: openai/clip-vit-large-patch14-336
+output_dim: 512
+
+# Directories — override on the command line or set here
+cache_dir: null        # local HuggingFace cache dir
+checkpoint: null       # parent directory that contains run subdirectories
+model_number: null     # run identifier (prefix of the run subdirectory name)
+output_dir: null       # directory for results
+
+# ---- Data ----
+data_root: null        # dataset root containing query/ and index/ subdirectories
+
+img_size: 336
+batch_size: 512
+num_workers: 4

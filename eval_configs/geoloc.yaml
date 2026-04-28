@@ -1,0 +1,23 @@
+# MML-CLIP: Geolocalization (G=>C & S=>C)
+# Usage:
+#   python evaluate_geolocalization.py --config eval_configs/geoloc.yaml
+
+# Evaluation:
+direction: G2C  # possibilities: G2C or S2C
+
+# Model specifics
+backbone: openai/clip-vit-large-patch14-336
+output_dim: 512
+
+# Directories — override on the command line or set here
+cache_dir: null        # local HuggingFace cache dir
+checkpoint: null       # parent directory that contains run subdirectories
+model_number: null     # run identifier (prefix of the run subdirectory name)
+output_dir: null       # directory for results
+
+# ---- Data ----
+data_root: null        # dataset root containing query/ and index/ subdirectories
+
+img_size: 336
+batch_size: 512
+num_workers: 4

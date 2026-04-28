@@ -1,0 +1,55 @@
+# MML-CLIP training configuration
+# Usage:
+#   python train.py --config configs/mml_clip.yaml --data_root /path/to/MML/train --output_dir /path/to/out
+#
+# Override modalities on the command line, e.g.:
+#   --modalities GS   (ground + satellite only)
+#   --modalities GSTC (all four modalities)
+
+# Modality selection: any combination of G (ground), S (satellite), T (text), C (GPS coordinates)
+# Examples: GS, GSC, GSTC etc.
+modalities: GSTC
+
+backbone: openai/clip-vit-large-patch14-336
+output_dim: 512
+
+# Directories — override on the command line or set here
+cache_dir: null        # local HuggingFace cache dir (e.g. /path/to/hf_cache)
+data_root: null        # path to train/ split directory
+output_dir: null       # directory for checkpoints and logs
+
+# Loss: "complete" = all C(n,2) pairs; "imagebind" = ground vs. rest
+loss: complete
+
+# Text sampling: "random" = random sentence; "first" = first sentence of lead section
+text_sampling: first
+
+last_sat_only: false
+outdoor_only: false
+
+# ---- Data ----
+img_size: 336
+n_val: 1024
+dataset_seed: 42
+
+# ---- Training ----
+epochs: 20
+
+batch_size: 512
+batch_size_eval: 128
+
+lr: 0.0001
+weight_decay: 0.0005
+
+clip_grad: 100.0
+
+seed: 1
+num_workers: 4
+
+
+# ---- Testing implementation ----
+subset: false
+
+# ---- Logging ----
+wandb: true
+wandb_project: MMLandmarks
