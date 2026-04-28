@@ -17,7 +17,7 @@ MMLandmarks is a multi-modal, instance-level and continental scale dataset of la
 ## Dataset
 
 Visit the [MMLandmarks](https://github.com/Oshkr/mmlandmarks) dataset codebase to download the full dataset.
-The page also extensively covers the contents of the dataset, as well as its structure.
+The page also extensively covers the contents of the dataset, as well as its structure. You can also explore the dataset visually [here](https://mmlandmarks.compute.dtu.dk/explore.html).
 
 
 ## Installation
@@ -62,10 +62,10 @@ Fill the config files with relevant information about:
 ### 🗽Cross-View Localization (G2S and S2G)
 
 - `G2S`:
-    - Takes the $18{,}668$ ground images from the $1000$ query landmarks and performs retrieval from the satellite index set, composed of the $100k$ distractor index set + the $1000$ positive satellite matches from the query landmarks.
+    - Takes the $18{,}688$ ground images from the $1000$ query landmarks and performs retrieval from the satellite index set, composed of the $100k$ distractor index set + the $1000$ positive satellite matches from the query landmarks.
 
 - `S2G`:
-    - Takes the $1000$ satellite images from the $1000$ query landmarks and performs retrieval from the ground index set, composed of the $714k$ distractor index set + the $18{,}668$ positive grund matches from the query landmarks.
+    - Takes the $1000$ satellite images from the $1000$ query landmarks and performs retrieval from the ground index set, composed of the $714k$ distractor index set + the $18{,}688$ positive grund matches from the query landmarks.
 
 
 ```bash
@@ -76,7 +76,7 @@ python evaluate_retrieval.py \
 ### 🌎 Geolocalization (G2C and S2C)
 
 - `G2C`: 
-    - Takes the $18{,}668$ ground images from the $1000$ query landmarks and performs geolocalization by finding the closest GPS coordinates from the satellite index set + the $1000$ GPS coordinates from the query landmarks.
+    - Takes the $18{,}688$ ground images from the $1000$ query landmarks and performs geolocalization by finding the closest GPS coordinates from the satellite index set + the $1000$ GPS coordinates from the query landmarks.
 - `S2C`: 
     - Takes the $1000$ satellite images from the $1000$ query landmarks and performs geolocalization by finding the closest GPS coordinates from the satellite index set + the $1000$ GPS coordinates from the query landmarks.
 ```bash
@@ -89,7 +89,7 @@ python evaluate_geolocalization.py \
 We try retrieving with text in three ways: with the `first` sentences, `random` sentences, or `no_cue` sentences where geographical cues have been removed from the first sentence.  
 
 - `T2G`: 
-    - Takes the $1000$ sentences from the $1000$ query landmarks and performs retrieval from the ground index set, composed of the $714k$ distractor index set + the $18{,}668$ positive grund matches from the query landmarks.
+    - Takes the $1000$ sentences from the $1000$ query landmarks and performs retrieval from the ground index set, composed of the $714k$ distractor index set + the $18{,}688$ positive grund matches from the query landmarks.
 - `T2S`:
     - Takes the $1000$ sentences from the $1000$ query landmarks and performs retrieval from the satellite index set, composed of the $100k$ distractor index set + the $1000$ positive satellite matches from the query landmarks.
 
@@ -113,7 +113,7 @@ python evaluate_text.py \
 
 ### 🤖 pretrained model:
 
-We provide a [pretrained model]() trained with the following setup:
+We provide a [pretrained model](https://archive.compute.dtu.dk/files/public/projects/MMLandmarks/pretrained_model/) trained with the following setup:
 - `modalities`: GSTC
 - `outdoor_only`: false
 - `text_sampling`: first
