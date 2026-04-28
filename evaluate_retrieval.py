@@ -6,12 +6,7 @@ Supports G2S (ground → satellite) and S2G (satellite → ground).
 Example
 --------
 python evaluate_retrieval.py \
-    --config configs/mml_clip.yaml \
-    --checkpoint /path/to/checkpoints \
-    --model_number <run_id> \
-    --direction G2S \
-    --data_root /path/to/MML \
-    --output_dir /path/to/results
+    --config eval_configs/crossview.yaml \
 """
 
 import argparse

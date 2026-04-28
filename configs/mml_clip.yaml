@@ -1,15 +1,15 @@
 # MML-CLIP training configuration
 # Usage:
-#   python train.py --config configs/mml_clip.yaml --data_root /path/to/MML/train --output_dir /path/to/out
-#
-# Override modalities on the command line, e.g.:
-#   --modalities GS   (ground + satellite only)
-#   --modalities GSTC (all four modalities)
+#   python train.py --config configs/mml_clip.yaml
 
 # Modality selection: any combination of G (ground), S (satellite), T (text), C (GPS coordinates)
 # Examples: GS, GSC, GSTC etc.
 modalities: GSTC
 
+# ---- Testing implementation ----
+subset: false
+
+# ---- Model ----
 backbone: openai/clip-vit-large-patch14-336
 output_dim: 512
 
@@ -46,10 +46,6 @@ clip_grad: 100.0
 seed: 1
 num_workers: 4
 
-
-# ---- Testing implementation ----
-subset: false
-
 # ---- Logging ----
-wandb: true
+wandb: false
 wandb_project: MMLandmarks

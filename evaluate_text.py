@@ -7,17 +7,11 @@ satellite (T2S), or GPS coordinates (T2C) from the respective gallery.
 Example
 --------
 python evaluate_text.py \
-    --config configs/mml_clip.yaml \
-    --checkpoint /path/to/checkpoints \
-    --model_number <run_id> \
-    --direction T2S \
-    --data_root /path/to/MML \
-    --output_dir /path/to/results
+    --config eval_configs/text_to_X.yaml \
 """
 
 import argparse
 import json
-import math
 import os
 
 import numpy as np

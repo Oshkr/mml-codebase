@@ -11,16 +11,11 @@ landmark coordinates (so all ground-truth locations are always reachable).
 Example
 --------
 python evaluate_geolocalization.py \
-    --checkpoint /path/to/checkpoints \
-    --model_number <run_id> \
-    --direction G2C \
-    --data_root /path/to/MML \
-    --output_dir /path/to/results
+    --config eval_configs/geoloc.yaml
 """
 
 import argparse
 import json
-import math
 import os
 import yaml
 

@@ -16,126 +16,140 @@ MMLandmarks is a multi-modal, instance-level and continental scale dataset of la
 
 ## Dataset
 
-Visit [mmlandmarks](https://github.com/Oshkr/mmlandmarks) to download the dataset. 
-The page also extensively covers the contents of the dataset as well as its structure.
+Visit the [MMLandmarks](https://github.com/Oshkr/mmlandmarks) dataset codebase to download the full dataset.
+The page also extensively covers the contents of the dataset, as well as its structure.
 
 
 ## Installation
 
 ```bash
-git clone https://github.com/Oshkr/mmlandmarks
-cd mmlandmarks
+git clone https://github.com/Oshkr/mml-codebase
+cd mml-codebase
 pip install -e .
 pip install -r requirements.txt
 ```
 
 ## Training
 
+Fill the config files with relevant information about:
+- `modalities`: Choose any combination of modalities: (G: Ground, S: Satellite, T: Text, C: Coordinates)
+- `cache_dir`: local HuggingFace cache dir for pretrained models.
+- `data_root`: root directory for the mmlandmarks dataset.
+- `output_dir`: directory where the checkpoints and logs should be stored.
+
+Other useful configurations:
+- `loss`: choose between complete contrastive loss, or imagebind-style loss.
+- `text_sampling`: choose sampling the first sentence or random sentences.
+- `last_sat_only`: if true, always uses the latest satellite from the landmark.
+- `outdoor_only`: if true, uses the subset of outdoor filtered ground images.
+
 ```bash
 python train.py \
-    --model_type MML_CLIP \
-    --modalities GSTC \
-    --loss complete \
-    --text_sampling random \
-    --data_root /path/to/dataset/train \
-    --output_dir /path/to/checkpoints \
-    --epochs 20 \
-    --batch_size 512 \
-    --wandb
+    --config configs/mml_clip.yaml \
 ```
 
 ## Evaluation
 
-Training saves checkpoints to `<output_dir>/<run_di>_<model_type>_.../weights_best.pth`.  
-Pass `--checkpoint <output_dir>` and `--model_number <run_id>` to the evaluation scripts.
+Training saves checkpoints to `<output_dir>/<run_id>_<model_type>_.../weights_best.pth`.
 
-### Standard retrieval (G2S and S2G)
+Fill the config files with relevant information about:
+- `cache_dir`: local HuggingFace cache dir for pretrained models.
+- `checkpoint`: directory of the model checkpoint.
+- `model_number`: `run_id` of the model checkpoint.
+- `data_root`: root directory for the mmlandmarks dataset.
+- `output_dir`: directory where the results should be stored.
+
+### 🗽Cross-View Localization (G2S and S2G)
+
+- `G2S`:
+    - Takes the $18{,}668$ ground images from the $1000$ query landmarks and performs retrieval from the satellite index set, composed of the $100k$ distractor index set + the $1000$ positive satellite matches from the query landmarks.
+
+- `S2G`:
+    - Takes the $1000$ satellite images from the $1000$ query landmarks and performs retrieval from the ground index set, composed of the $714k$ distractor index set + the $18{,}668$ positive grund matches from the query landmarks.
+
 
 ```bash
 python evaluate_retrieval.py \
-    --model_type MML_CLIP \
-    --checkpoint /path/to/checkpoints \
-    --model_number <run_id> \
-    --direction G2S \
-    --data_root /path/to/dataset \
-    --output_dir /path/to/results
+    --config eval_configs/crossview.yaml
 ```
 
-```bash
-python evaluate_retrieval.py \
-    --model_type MML_CLIP \
-    --checkpoint /path/to/checkpoints \
-    --model_number <run_id> \
-    --direction S2G \
-    --data_root /path/to/dataset \
-    --output_dir /path/to/results
-```
+### 🌎 Geolocalization (G2C and S2C)
 
-### Geolocalization (G2C and S2C)
-
+- `G2C`: 
+    - Takes the $18{,}668$ ground images from the $1000$ query landmarks and performs geolocalization by finding the closest GPS coordinates from the satellite index set + the $1000$ GPS coordinates from the query landmarks.
+- `S2C`: 
+    - Takes the $1000$ satellite images from the $1000$ query landmarks and performs geolocalization by finding the closest GPS coordinates from the satellite index set + the $1000$ GPS coordinates from the query landmarks.
 ```bash
 python evaluate_geolocalization.py \
-    --checkpoint /path/to/checkpoints \
-    --model_number <run_id> \
-    --direction G2C \
-    --data_root /path/to/dataset \
-    --output_dir /path/to/results
+    --config eval_configs/geoloc.yaml
 ```
 
-### Text-to-X retrieval (T2G, T2S, T2C)
+### ✏️ Text-to-X retrieval (T2G, T2S, T2C)
+
+We try retrieving with text in three ways: with the `first` sentences, `random` sentences, or `no_cue` sentences where geographical cues have been removed from the first sentence.  
+
+- `T2G`: 
+    - Takes the $1000$ sentences from the $1000$ query landmarks and performs retrieval from the ground index set, composed of the $714k$ distractor index set + the $18{,}668$ positive grund matches from the query landmarks.
+- `T2S`:
+    - Takes the $1000$ sentences from the $1000$ query landmarks and performs retrieval from the satellite index set, composed of the $100k$ distractor index set + the $1000$ positive satellite matches from the query landmarks.
+
+- `T2C`:
+    - Takes the $1000$ sentences from the $1000$ query landmarks and performs geolocalization by finding the closest GPS coordinates from the satellite index set + the $1000$ GPS coordinates from the query landmarks.
 
 ```bash
 python evaluate_text.py \
-    --checkpoint /path/to/checkpoints \
-    --model_number <run_id> \
-    --direction T2S \
-    --text_sampling no_cues \
-    --data_root /path/to/dataset \
-    --output_dir /path/to/results
+    --config eval_configs/text_to_X.yaml
 ```
 
-### Reported metrics
+## Reported metrics
 
+### Retrieval / Cross-View Localization
 - **Recall@1, @5, @10** — fraction of queries where the correct match appears in the top-k results
 - **mAP** — mean average precision (computed over the top-1000 gallery items)
 - **Median Rank** — median rank of the first correct retrieval
 
----
+### Geolocalization:
+- **Distance (% @ km)** — percentage accuracy at standard distance thresholds (1 / 25 / 200 / 750 / 2500 km).
 
-## Project structure
+### 🤖 pretrained model:
 
-```
-mmlandmarks_codebase/
-├── mmlandmarks/
-│   ├── models/
-│   │   ├── mml_clip.py          # MmlCLIP and GSCLIP
-│   │   ├── encoders.py          # CLIPImageEncoder, CLIPTextEncoder
-│   │   └── location_encoder.py  # LocationEncoder (GPS, RFF, EEP)
-│   ├── data/
-│   │   ├── train_dataset.py     # CVDataset, MMLDataset, MultimodalCollator
-│   │   ├── eval_dataset.py      # MMLandmarksQuerySet, MMLandmarksIndexSet,
-│   │   │                        # MMLandmarksTextQuerySet, TextCollator
-│   │   └── transforms.py        # get_transforms()
-│   ├── losses.py                # InfoNCE, FullyContrastiveLoss, ImageBindLoss
-│   ├── metrics.py               # extract_features, evaluate_retrieval
-│   └── utils.py                 # AverageMeter, setup_reproducibility, TeeLogger
-├── train.py                     # Training entry point
-├── evaluate_retrieval.py        # Cross-view retrieval evaluation (G2S, S2G)
-├── evaluate_geolocalization.py  # Geolocalization evaluation (G2C, S2C)
-├── evaluate_text.py             # Text-to-X retrieval evaluation (T2G, T2S, T2C)
-├── configs/
-│   ├── mml_clip.yaml            # Training config for MML-CLIP
-│   └── gs_clip.yaml             # Training config for GS-CLIP
-├── eval_configs/
-│   ├── crossview.yaml           # Eval config for G2S / S2G
-│   ├── geoloc.yaml              # Eval config for G2C / S2C
-│   └── text_to_X.yaml           # Eval config for T2G / T2S / T2C
-├── requirements.txt
-└── setup.py
-```
+We provide a [pretrained model]() trained with the following setup:
+- `modalities`: GSTC
+- `outdoor_only`: false
+- `text_sampling`: first
+- `last_sat_only`: false
+- `loss`: complete
+
+#### Results:
+|  | MedR | mAP@1k | R@1 | R@5 | R@10 |
+|:-----:|:---------:|:-------------:|:----------------:|:---------------:|:-----------------:|
+| `G2S` | 57 | 24.88 | 19.40 | 43.77 | 56.45 |
+| `S2G` | 29 | 16.86 | 27.30 | 48.40 | 57.70 |
+| `T2G` | 77 | 16.31 | 28.10 | 44.60 | 52.40 |
+| `T2S` | 712 | 17.6 | 13.80 | 31.70 | 40.80 |
+
+|  | Dist @ 1km | Dist @ 25km | Dist @ 200km | Dist @ 750km | Dist @ 2500km |
+|:-----:|:---------:|:-------------:|:----------------:|:---------------:|:-----------------:|
+| `G2C` | 16.6 | 36.0 | 50.77 | 74.6 | 92.3 |
+| `S2C` | 26.4 | 50.3 | 71.3 | 91.9 | 98.9 |
+| `T2C`(`no_cues`) | 6.1 | 17.8 | 28.7 | 51.9 | 87.7 |
+
 
 ---
 
 ## Acknowledgements
 
 The GPS location encoder is based on [GeoCLIP](https://github.com/VicenteVivan/geo-clip) (Vivanco et al., 2023).
+
+## Citation
+
+If you find this work useful for your research, please consider citing our work as follows:
+```
+@InProceedings{Kristoffersen_2026_MMLandmarks,
+  author    = {Oskar Kristoffersen and Alba Reinders and Morten R. Hannemose and Anders B. Dahl and Dim P. Papadopoulos},
+  title     = {MMLandmarks: a Cross-View Instance-Level Benchmark for Geo-Spatial Understanding},
+  booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+  month     = {June},
+  year      = {2026},
+}
+```

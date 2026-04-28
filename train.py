@@ -5,17 +5,7 @@ Examples
 --------
 # Train the full four-modality model:
 python train.py \
-    --config configs/mml_clip.yaml \
-    --modalities GSTC \
-    --data_root /path/to/dataset/train \
-    --output_dir /path/to/checkpoints
-
-# Train with only ground + satellite:
-python train.py \
-    --config configs/mml_clip.yaml \
-    --modalities GS \
-    --data_root /path/to/dataset/train \
-    --output_dir /path/to/checkpoints
+    --config configs/mml_clip.yaml
 
 # Resume from a checkpoint:
 python train.py --config configs/mml_clip.yaml --checkpoint /path/to/weights_best.pth ...
@@ -75,7 +65,7 @@ def parse_args():
 
     # Data
     p.add_argument("--data_root",
-                   help="Path to the train/ split directory (e.g., /path/to/MML/train)")
+                   help="Dataset root containing train/ subdirectory")
     p.add_argument("--img_size", type=int, default=336)
     p.add_argument("--n_val", type=int, default=1024,
                    help="Number of landmarks reserved for validation")
@@ -192,9 +182,12 @@ def main():
     args.device = "cuda" if torch.cuda.is_available() else "cpu"
 
     run_id = time.strftime("%H%M%S")
+    outdoor_tag = f"_outdoor_only" if args.outdoor_only else ""
+
     run_name = (
         f"{run_id}_{args.modalities}"
         f"_text{args.text_sampling}_loss{args.loss}"
+        f"{outdoor_tag}"
         f"_bs{args.batch_size}_lr{args.lr}_ep{args.epochs}"
     )
 
@@ -239,8 +232,10 @@ def main():
     tokenizer = CLIPTokenizer.from_pretrained(args.backbone, cache_dir=args.cache_dir)
     collator = MultimodalCollator(tokenizer, max_length=77)
 
+    root_directory = os.path.join(args.data_root,"train")
+
     train_ds = MMLDataset(
-        root=args.data_root,
+        root=root_directory,
         transform_satellite=sat_train_tf,
         transform_ground=gnd_train_tf,
         text_sampling=args.text_sampling,
@@ -252,7 +247,7 @@ def main():
         outdoor_only=args.outdoor_only
     )
     val_ds = MMLDataset(
-        root=args.data_root,
+        root=root_directory,
         transform_satellite=sat_val_tf,
         transform_ground=gnd_val_tf,
         text_sampling=args.text_sampling,
