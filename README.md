@@ -12,12 +12,14 @@
 
 ## Description
 
+Explore the dataset [[here](https://mmlandmarks.compute.dtu.dk/explore.html)].
+
 MMLandmarks is a multi-modal, instance-level and continental scale dataset of landmarks collect from the United States of America. We address the shortcomings of datasets and specialized models used for geospatial tasks, such as for geolocalization, retrieval and cross-view localization, and instead propose a dataset that enables training and benchmarking models on all these tasks. In fact, for each landmark we collect multiple ground view images, temporal satellite images, as well as the landmarks' GPS coordinates and textual information. MMLandmarks provides data for $18{,}557$ unique landmarks, where each landmark contains all four modalities. With this dataset, we hope to motivate further multimodal research for geospatial tasks, and multimodal learning in general.
 
 ## Dataset
 
-Visit the [MMLandmarks](https://github.com/Oshkr/mmlandmarks) dataset codebase to download the full dataset.
-The page also extensively covers the contents of the dataset, as well as its structure. You can also explore the dataset visually [here](https://mmlandmarks.compute.dtu.dk/explore.html).
+Visit the [MMLandmarks](https://github.com/Oshkr/mmlandmarks) codebase to download the full dataset.
+The page also extensively covers the contents of the dataset, as well as its structure.
 
 
 ## Installation
@@ -62,10 +64,10 @@ Fill the config files with relevant information about:
 ### 🗽Cross-View Localization (G2S and S2G)
 
 - `G2S`:
-    - Takes the $18{,}688$ ground images from the $1000$ query landmarks and performs retrieval from the satellite index set, composed of the $100k$ distractor index set + the $1000$ positive satellite matches from the query landmarks.
+    - Takes the $18{,}688$ ground images from the $1000$ query landmarks and performs retrieval from the satellite index set, composed of the $99{,}539$ distractor index set + the $1000$ positive satellite matches from the query landmarks.
 
 - `S2G`:
-    - Takes the $1000$ satellite images from the $1000$ query landmarks and performs retrieval from the ground index set, composed of the $714k$ distractor index set + the $18{,}688$ positive grund matches from the query landmarks.
+    - Takes the $1000$ satellite images from the $1000$ query landmarks and performs retrieval from the ground index set, composed of the $714{,}554$ distractor index set + the $18{,}688$ positive grund matches from the query landmarks.
 
 
 ```bash
@@ -76,9 +78,9 @@ python evaluate_retrieval.py \
 ### 🌎 Geolocalization (G2C and S2C)
 
 - `G2C`: 
-    - Takes the $18{,}688$ ground images from the $1000$ query landmarks and performs geolocalization by finding the closest GPS coordinates from the satellite index set + the $1000$ GPS coordinates from the query landmarks.
+    - Takes the $18{,}688$ ground images from the $1000$ query landmarks and performs geolocalization by finding the closest GPS coordinates from the satellite index set ($99{,}539$ coordinates) + the $1000$ GPS coordinates from the query landmarks.
 - `S2C`: 
-    - Takes the $1000$ satellite images from the $1000$ query landmarks and performs geolocalization by finding the closest GPS coordinates from the satellite index set + the $1000$ GPS coordinates from the query landmarks.
+    - Takes the $1000$ satellite images from the $1000$ query landmarks and performs geolocalization by finding the closest GPS coordinates from the satellite index set ($99{,}539$ coordinates) + the $1000$ GPS coordinates from the query landmarks.
 ```bash
 python evaluate_geolocalization.py \
     --config eval_configs/geoloc.yaml
@@ -89,12 +91,12 @@ python evaluate_geolocalization.py \
 We try retrieving with text in three ways: with the `first` sentences, `random` sentences, or `no_cue` sentences where geographical cues have been removed from the first sentence.  
 
 - `T2G`: 
-    - Takes the $1000$ sentences from the $1000$ query landmarks and performs retrieval from the ground index set, composed of the $714k$ distractor index set + the $18{,}688$ positive grund matches from the query landmarks.
+    - Takes the $1000$ sentences from the $1000$ query landmarks and performs retrieval from the ground index set, composed of the $714{,}554$ distractor index set + the $18{,}688$ positive grund matches from the query landmarks.
 - `T2S`:
-    - Takes the $1000$ sentences from the $1000$ query landmarks and performs retrieval from the satellite index set, composed of the $100k$ distractor index set + the $1000$ positive satellite matches from the query landmarks.
+    - Takes the $1000$ sentences from the $1000$ query landmarks and performs retrieval from the satellite index set, composed of the $99{,}539$ distractor index set + the $1000$ positive satellite matches from the query landmarks.
 
 - `T2C`:
-    - Takes the $1000$ sentences from the $1000$ query landmarks and performs geolocalization by finding the closest GPS coordinates from the satellite index set + the $1000$ GPS coordinates from the query landmarks.
+    - Takes the $1000$ sentences from the $1000$ query landmarks and performs geolocalization by finding the closest GPS coordinates from the satellite index set ($99{,}539$ coordinates) + the $1000$ GPS coordinates from the query landmarks.
 
 ```bash
 python evaluate_text.py \
@@ -105,8 +107,8 @@ python evaluate_text.py \
 
 ### Retrieval / Cross-View Localization
 - **Recall@1, @5, @10** — fraction of queries where the correct match appears in the top-k results
-- **mAP** — mean average precision (computed over the top-1000 gallery items)
-- **Median Rank** — median rank of the first correct retrieval
+- **mAP@1k** — mean average precision (computed over the top-1000 gallery items)
+- **medR** — median rank of the first correct retrieval
 
 ### Geolocalization:
 - **Distance (% @ km)** — percentage accuracy at standard distance thresholds (1 / 25 / 200 / 750 / 2500 km).
@@ -121,7 +123,7 @@ We provide a [pretrained model](https://archive.compute.dtu.dk/files/public/proj
 - `loss`: complete
 
 #### Results:
-|  | MedR | mAP@1k | R@1 | R@5 | R@10 |
+|  | medR | mAP@1k | R@1 | R@5 | R@10 |
 |:-----:|:---------:|:-------------:|:----------------:|:---------------:|:-----------------:|
 | `G2S` | 57 | 24.88 | 19.40 | 43.77 | 56.45 |
 | `S2G` | 29 | 16.86 | 27.30 | 48.40 | 57.70 |

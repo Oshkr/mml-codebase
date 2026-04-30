@@ -1,9 +1,9 @@
-# MML-CLIP: Text to X retrieval
+# MML-CLIP: Text to X retrieval (T=>S, T=>C & T=>G)
 # Usage:
 #   python evaluate_text.py --config eval_configs/text_to_X.yaml
 
 # Evaluation:
-direction: T2G         # possibilities: T2S, T2C or T2G
+direction: T2S         # possibilities: T2S, T2C or T2G
 text_sampling: no_cues # possibilities: first, random, no_cues
 
 # Model specifics
@@ -17,7 +17,7 @@ model_number: null     # run identifier (prefix of the run subdirectory name)
 output_dir: null       # directory for results
 
 # ---- Data ----
-data_root: null        # dataset root containing query/ and index/ subdirectories
+data_root: null        # path to dataset directory
 
 img_size: 336
 batch_size: 512

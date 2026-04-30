@@ -16,7 +16,7 @@ model_number: null     # run identifier (prefix of the run subdirectory name)
 output_dir: null       # directory for results
 
 # ---- Data ----
-data_root: null        # dataset root containing query/ and index/ subdirectories
+data_root: null        # path to dataset directory
 
 img_size: 336
 batch_size: 512
